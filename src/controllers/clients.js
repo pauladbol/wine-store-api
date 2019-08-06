@@ -1,7 +1,7 @@
 import { listAllClients } from '../models/clients';
 import { listAllPurchases } from '../models/purchases';
-import { isUndefined } from 'util';
 import { replaceCPFCharacters } from '../helpers/string-helper';
+import { parseDate } from '../helpers/date-helper';
 
 export const getAllClients = async () => {
   
@@ -15,14 +15,19 @@ export const getAllClients = async () => {
     return clientsByPurchase;
 }
 
-
 export const getClientMajorPurchase = async () => {
 
     const clients = await listAllClients();
     const purchases = await listAllPurchases();
     
-    let biggestPurchase = purchases.reduce((accumulator, current) => 
-                                    accumulator.valorTotal > current.valorTotal ? accumulator : current);
+    let yearPurchases = purchases.filter(purchase => {
+        let date = parseDate(purchase.data);
+
+        return date.getFullYear() === 2016;
+    });
+
+    let biggestPurchase = yearPurchases.reduce((accumulator, current) =>
+                        (accumulator.valorTotal > current.valorTotal) ? accumulator : current);
 
     let clientMajorPurchase;
 
